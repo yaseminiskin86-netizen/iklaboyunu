@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>İklab Çarkıfelek</title>
+<title>İklab Uygulama Çarkı</title>
 <style>
 :root{--navy:#073675;--gold:#e7a51a;--cream:#fff7dc;--ok:#148b58;--bad:#b43f3f;--panel:#fff9e9;--ink:#092e63;--shadow:0 8px 22px rgba(27,36,45,.24)}
 *{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:Arial,"Segoe UI",sans-serif;color:var(--ink);background:#102d47} button,input{font:inherit}
@@ -209,24 +209,115 @@ body{display:block}
   .task-actions{min-height:74px}.action{min-height:68px;font-size:25px;padding:14px 34px}
 }
 
+
+/* Karistirma Sorusu: tum secenekler ve Kontrol Et butonu kart icinde gorunsun */
+.task-body.karistir-body{gap:8px!important;padding-top:10px!important;padding-bottom:8px!important}
+.task-body.karistir-body h2{font-size:46px!important;line-height:1.02!important;margin:0!important}
+.task-body.karistir-body .instruction{font-size:25px!important;line-height:1.15!important;margin:0!important}
+.task-body.karistir-body .karistir-example{height:150px!important;max-height:150px!important;margin:0!important}
+.task-body.karistir-body .options{gap:7px!important;margin:0 auto!important}
+.task-body.karistir-body .option{min-height:55px!important;padding:8px 20px!important;font-size:23px!important}
+.task-body.karistir-body .feedback{min-height:22px!important;font-size:17px!important;line-height:1.05!important}
+.task-body.karistir-body .task-actions{min-height:58px!important;margin-top:0!important}
+.task-body.karistir-body .action{min-height:54px!important;padding:9px 30px!important;font-size:20px!important}
+
+
+
+/* === v10 genel kilitlenme + buton hizalama guvenlik duzeltmesi === */
+.task-card{overflow:hidden!important}
+.task-body{position:relative!important;padding-bottom:118px!important;min-height:0!important;overflow:hidden!important}
+.task-actions{
+  position:absolute!important;
+  left:50%!important;
+  bottom:26px!important;
+  transform:translateX(-50%)!important;
+  width:calc(100% - 92px)!important;
+  min-height:72px!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:18px!important;
+  flex-wrap:nowrap!important;
+  z-index:20!important;
+}
+.task-actions .action{flex:0 0 auto!important;min-width:190px!important;max-width:360px!important}
+.feedback{margin-top:0!important;max-width:940px!important;flex:0 0 auto!important}
+/* Uzun tanim metinlerinde butonlar altta sabit kalir, secenekler kontrollu bicimde sikisir. */
+.task-body:not(.karistir-body) .options{flex:0 1 auto!important;min-height:0!important}
+.task-body:not(.karistir-body) .option{min-height:66px!important;padding:12px 22px!important;font-size:24px!important;line-height:1.22!important}
+/* Karistirma ekraninda onceki kompakt duzen korunur, eylemler yine kart icinde sabittir. */
+.task-body.karistir-body{padding-bottom:104px!important}
+.task-body.karistir-body .task-actions{bottom:22px!important;min-height:62px!important}
+/* Islem sirasinda gorunmez katman/takilma etkisi olusmasin. */
+.task-card,.task-body,.task-actions{pointer-events:auto}
+.action{touch-action:manipulation}
+
+/* === v12 donma/kilitlenme duzeltmeleri === */
+/* Donen kare cark resminin saydam koseleri "Carki Cevir" butonunun ustune binip tiklamalari yutuyordu. */
+.wheel,.pointer,.center-cap,.wheel-title,.task-header{pointer-events:none!important}
+.wheel-wrap{z-index:1}
+.spin-button{position:relative;z-index:30}
+/* Donen elemanda filtre her karede yeniden cizim yaptiriyordu (zayif akilli tahtalarda takilma). Golge sabit katmana alindi. */
+.wheel{filter:none!important;backface-visibility:hidden}
+.wheel-wrap::before{content:"";position:absolute;inset:2.5%;border-radius:50%;box-shadow:0 10px 18px rgba(0,0,0,.30);pointer-events:none}
+.task-card{filter:none!important}
+.pointer.tick{animation:none}
+/* Iklabi Bul: dokunmatik/kalem/fare ile ayni sekilde calisan surukleyerek secim */
+.arabic-drag{position:relative!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;-webkit-touch-callout:none!important;cursor:crosshair!important}
+.arabic-drag .drag-text{position:relative;z-index:2}
+.arabic-drag .drag-hl{position:absolute;z-index:1;background:#ffd16a;border-radius:10px;pointer-events:none}
+.arabic-drag.ok .drag-hl{background:#bfeccf}.arabic-drag.bad .drag-hl{background:#ffc9c9}
+/* Ana sayfa onay penceresi (tarayici confirm() yerine; akilli tahta tarayicilari confirm'i engelleyebiliyor) */
+.modal-back{position:absolute;inset:0;z-index:100;background:rgba(5,25,50,.55);display:flex;align-items:center;justify-content:center}
+.modal-box{background:#fff9e9;border:5px solid #e9b041;border-radius:26px;padding:34px 44px;text-align:center;box-shadow:var(--shadow);max-width:760px}
+.modal-box p{font-size:30px;font-weight:800;margin:0 0 26px;color:var(--ink)}
+.task-body .arabic-drag{min-height:0!important;padding:4px 32px!important;margin:4px auto!important;line-height:1.45!important}
+.task-body .drag-hint{font-size:20px}
+.task-body .timer-wrap{width:128px;height:128px}.task-body .timer-number{font-size:40px}
+.modal-box .task-actions{position:static!important;transform:none!important;width:auto!important}
+
+/* === v13 Intro videosu === */
+#introScreen{position:absolute;inset:0;z-index:50;background:#000;align-items:center;justify-content:center}
+#introScreen.active{display:flex}
+#introVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.intro-layer{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:26px;z-index:3}
+.intro-layer.show{display:flex}
+#introTapLayer{background:rgba(3,20,40,.30);cursor:pointer}
+#introPlayBtn{animation:introPulse 1.6s ease-in-out infinite}
+.intro-big{border:6px solid #f3c35a;border-radius:40px;background:linear-gradient(#1b95ee,#0757b5);color:#fff;font-weight:900;font-size:64px;padding:26px 70px;cursor:pointer;box-shadow:0 10px 0 #063e83,0 18px 40px rgba(0,0,0,.45);letter-spacing:1px;touch-action:manipulation}
+.intro-big:active{transform:translateY(6px);box-shadow:0 4px 0 #063e83,0 10px 24px rgba(0,0,0,.4)}
+@keyframes introPulse{50%{transform:scale(1.06)}}
+.intro-note{color:#fff;font-size:28px;font-weight:700;text-shadow:0 2px 6px #000}
+#introSkipBtn{position:absolute;right:34px;bottom:30px;z-index:4;border:3px solid #f3c35a;border-radius:24px;background:rgba(6,40,80,.75);color:#fff;font-size:26px;font-weight:800;padding:12px 26px;cursor:pointer;display:none}
+#introSkipBtn.show{display:block}
+.intro-replay{margin-top:14px;border:0;background:transparent;color:#0b4f96;font-weight:800;font-size:18px;cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
 <div class="overlay">
-<section id="startScreen" class="screen active" aria-labelledby="startTitle">
+<section id="introScreen" class="screen active" aria-label="Oyun tanıtım videosu">
+  <video id="introVideo" poster="assets/video/intro_poster.jpg" preload="auto" playsinline webkit-playsinline><source src="assets/video/intro.mp4" type="video/mp4"><source id="introLastSource" src="assets/video/intro.webm" type="video/webm"></video>
+  <div id="introTapLayer" class="intro-layer" role="button" tabindex="0" aria-label="Oyunu başlat">
+    <button id="introPlayBtn" class="intro-big" type="button">▶ OYUNU BAŞLAT</button>
+  </div>
+  <button id="introSkipBtn" type="button" aria-label="İntroyu geç">Geç ⏭</button>
+</section>
+
+<section id="startScreen" class="screen" aria-labelledby="startTitle">
   <div class="start-card">
-    <img class="logo" src="assets/images/title.png" alt="İklab Çarkıfelek">
-    <h2 id="startTitle">İklab Çarkıfelek Oyununa Hoş Geldin</h2>
+    <img class="logo" src="assets/images/title.png" alt="İklab Uygulama Çarkı">
+    <h2 id="startTitle">İklab Uygulama Çarkına Hoş Geldin</h2>
     <label for="studentName"><strong>Adın ve Soyadın</strong></label><br><br>
     <input id="studentName" class="name-input" maxlength="60" autocomplete="off" placeholder="Ad Soyad" aria-describedby="nameHelp">
     <div id="nameHelp" class="sr-only">Oyuna başlayabilmek için ad ve soyad giriniz.</div>
     <div class="howto"><strong>Nasıl oynanır?</strong><br>• Çarkı çevir ve gelen görevi tamamla.<br>• Her soruda 3 hakkın var; seçenekler her oyunda karışır.<br>• Hızlı Cevap bölümünde 10 saniyen vardır.<br>• 10 görevi tamamlayınca başarı belgen hazırlanır.</div>
     <div id="startMsg" class="feedback bad" aria-live="polite"></div>
-    <button id="startBtn" class="primary">Oyuna Başla</button>
+    <button id="startBtn" class="primary">Oyuna Başla</button><br><button id="introReplayBtn" class="intro-replay" type="button">🎬 İntroyu tekrar izle</button>
   </div>
 </section>
 
-<section id="gameScreen" class="screen" aria-label="İklab Çarkıfelek oyun ekranı">
+<section id="gameScreen" class="screen" aria-label="İklab Uygulama Çarkı oyun ekranı">
 <div class="game-shell">
   <div class="topbar">
     <div class="pill" aria-label="Puan"><span>⭐</span> PUAN: <span id="scoreTop">0</span></div>
@@ -238,9 +329,9 @@ body{display:block}
 
   <div class="main-grid">
     <section class="wheel-zone" aria-label="Çark alanı">
-      <img class="wheel-title" src="assets/images/title.png" alt="İklab Çarkıfelek">
+      <img class="wheel-title" src="assets/images/title.png" alt="İklab Uygulama Çarkı">
       <div class="wheel-wrap">
-        <img id="wheel" class="wheel" src="assets/images/wheel.png" alt="Dokuz bölümlü İklab Çarkıfelek çarkı">
+        <img id="wheel" class="wheel" src="assets/images/wheel.png" alt="Dokuz bölümlü İklab Uygulama Çarkı">
         <img id="pointer" class="pointer" src="assets/images/wheel_pointer.png" alt="Çark göstergesi">
       </div>
       <button id="spinBtn" class="img-button spin-button" aria-label="Çarkı çevir"><img src="assets/images/button_spin.png" alt="Çarkı çevir"></button>
@@ -297,86 +388,258 @@ const CONFIG={
  audio:{correct:'assets/audio/correct.mp3',wrong:'assets/audio/wrong.mp3'}
 };
 const SEGMENTS=['bonus','oku','bul','tanim','tamamla','sec','tekrar','hizli','karistir'];
-const state={name:'',score:0,progress:0,rights:3,rotation:0,spinning:false,sound:true,deck:[],current:null,selected:null,wrongAttempts:0,correctCount:0,mediaRecorder:null,recordedBlob:null,recordedUrl:null,stream:null,timerId:null,timeLeft:10};
+const state={name:'',score:0,progress:0,rights:3,rotation:0,spinning:false,sound:true,deck:[],current:null,selected:null,wrongAttempts:0,correctCount:0,mediaRecorder:null,recordedBlob:null,recordedUrl:null,stream:null,timerId:null,timeLeft:10,spinToken:0,spinWatchdog:null,selectionCleanup:null,roundCompleting:false,answerResolved:false,taskToken:0,lastInteractionAt:Date.now(),interactionWatchdog:null,micTimeout:null,micPending:false,player:null};
 const $=id=>document.getElementById(id);
 const els={start:$('startScreen'),game:$('gameScreen'),final:$('finalScreen'),wheel:$('wheel'),pointer:$('pointer'),spin:$('spinBtn'),taskBody:$('taskBody'),taskHeader:$('taskHeader'),scoreTop:$('scoreTop'),scoreBottom:$('scoreBottom'),progressText:$('progressText'),progressDots:$('progressDots'),hearts:$('hearts'),live:$('liveRegion')};
 const safeText=(el,text)=>{el.textContent=String(text??'')};
 function announce(t){safeText(els.live,t)}
-function showScreen(which){[els.start,els.game,els.final].forEach(x=>x.classList.remove('active'));which.classList.add('active')}
+function showScreen(which){[$('introScreen'),els.start,els.game,els.final].forEach(x=>x.classList.remove('active'));which.classList.add('active')}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
 function refillDeck(){state.deck=shuffle(SEGMENTS)}
 function nextSegment(){if(!state.deck.length)refillDeck();return state.deck.shift()}
 function updateHud(){safeText(els.scoreTop,state.score);safeText(els.scoreBottom,state.score);safeText(els.progressText,`${state.progress} / ${CONFIG.rounds}`);safeText(els.progressDots,'●'.repeat(state.progress)+'○'.repeat(CONFIG.rounds-state.progress));safeText(els.hearts,'♥'.repeat(state.rights)+'♡'.repeat(CONFIG.rightsPerQuestion-state.rights))}
-function resetTaskState(){state.rights=CONFIG.rightsPerQuestion;state.selected=null;clearTimer();updateHud();cleanupRecording()}
+function cleanupSelectionListener(){if(typeof state.selectionCleanup==='function'){try{state.selectionCleanup()}catch(e){}state.selectionCleanup=null}}
+function clearSpinWatchdog(){if(state.spinWatchdog){clearTimeout(state.spinWatchdog);state.spinWatchdog=null}}
+function resetTaskState(){state.taskToken++;state.rights=CONFIG.rightsPerQuestion;state.selected=null;state.roundCompleting=false;state.answerResolved=false;clearTimer();cleanupSelectionListener();clearMicTimeout();updateHud();cleanupRecording();state.lastInteractionAt=Date.now()}
 function playFeedback(kind){if(!state.sound)return;const a=kind==='correct'?$('correctAudio'):$('wrongAudio');try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}}
-let audioCtx=null;
-function wheelClick(){if(!state.sound)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='square';o.frequency.value=900;g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.035);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.04)}catch(e){}}
-function pointerTick(){els.pointer.classList.remove('tick');void els.pointer.offsetWidth;els.pointer.classList.add('tick');wheelClick()}
+let audioCtx=null,lastClickAt=0;
+// Ses baglami yalnizca kullanici dokunusunda olusturulur/uyandirilir (aksi halde askida kalir).
+function unlockAudio(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audioCtx=audioCtx||new AC();if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{})}catch(e){}}
+function wheelClick(){if(!state.sound||!audioCtx||audioCtx.state!=='running')return;const now=performance.now();if(now-lastClickAt<45)return;lastClickAt=now;try{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='square';o.frequency.value=900;g.gain.setValueAtTime(.025,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.035);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.04)}catch(e){}}
+// Eski surum her dilimde zorunlu yeniden yerlesim (offsetWidth) yaptiriyordu; Web Animations ile reflow yok.
+let tickAnim=null;
+function pointerTick(){try{if(els.pointer.animate){if(tickAnim)tickAnim.cancel();tickAnim=els.pointer.animate([{transform:'translateX(-50%) rotate(0deg)'},{transform:'translateX(-50%) rotate(10deg)'},{transform:'translateX(-50%) rotate(0deg)'}],{duration:120,easing:'ease-out'})}}catch(e){}wheelClick()}
+// Cark butonu yalnizca gorev yokken (ya da Tekrar diliminde) aktif. Gorev ortasinda cevirmek gorevi siliyor ve durumlari karistiriyordu.
+function spinAllowed(){return els.game.classList.contains('active')&&!state.spinning&&state.progress<CONFIG.rounds&&(!state.current||state.current==='tekrar')}
+function updateSpinButton(){if(els.spin)els.spin.disabled=!spinAllowed()}
 function easeOutQuint(t){return 1-Math.pow(1-t,5)}
-function spinWheel(){if(state.spinning||state.progress>=CONFIG.rounds)return;resetTaskState();state.spinning=true;els.spin.disabled=true;state.current=null;renderWaiting('Çark dönüyor…','Gösterge durduğunda görevin açılacak.');
- const selected=nextSegment();const idx=SEGMENTS.indexOf(selected);const targetMod=((360-idx*40)%360);const curMod=((state.rotation%360)+360)%360;let delta=(targetMod-curMod+360)%360;const turns=5+Math.floor(Math.random()*3);const start=state.rotation;const end=start+turns*360+delta;const duration=3800+Math.random()*900;const t0=performance.now();let lastBucket=Math.floor(start/40);
- function frame(now){const p=Math.min(1,(now-t0)/duration),e=easeOutQuint(p);state.rotation=start+(end-start)*e;els.wheel.style.transform=`rotate(${state.rotation}deg)`;const b=Math.floor(state.rotation/40);if(b!==lastBucket){lastBucket=b;pointerTick()}if(p<1)requestAnimationFrame(frame);else{state.rotation=end;state.spinning=false;els.spin.disabled=false;state.current=selected;setTimeout(()=>renderTask(selected),250)}}requestAnimationFrame(frame)}
+function spinWheel(){
+ if(state.spinning||state.progress>=CONFIG.rounds)return;
+ if(state.current&&state.current!=='tekrar')return;
+ unlockAudio();
+ resetTaskState();
+ state.lastInteractionAt=Date.now();
+ state.spinning=true;els.spin.disabled=true;state.current=null;
+ renderWaiting('Çark dönüyor…','Gösterge durduğunda görevin açılacak.');
+ const selected=nextSegment();const idx=SEGMENTS.indexOf(selected);const targetMod=((360-idx*40)%360);const curMod=((state.rotation%360)+360)%360;let delta=(targetMod-curMod+360)%360;const turns=5+Math.floor(Math.random()*3);const start=state.rotation;const end=start+turns*360+delta;const duration=3800+Math.random()*900;const t0=performance.now();let lastBucket=Math.floor(start/40);const token=++state.spinToken;
+ const finishSpin=()=>{if(token!==state.spinToken)return;clearSpinWatchdog();state.rotation=end;els.wheel.style.transform=`rotate(${state.rotation}deg)`;state.spinning=false;state.current=selected;updateSpinButton();state.lastInteractionAt=Date.now();setTimeout(()=>{if(token===state.spinToken&&state.current===selected)renderTask(selected)},150)};
+ clearSpinWatchdog();state.spinWatchdog=setTimeout(()=>{if(token===state.spinToken&&state.spinning)finishSpin()},duration+1800);
+ function frame(now){if(token!==state.spinToken)return;try{const p=Math.min(1,(now-t0)/duration),e=easeOutQuint(p);state.rotation=start+(end-start)*e;els.wheel.style.transform=`rotate(${state.rotation}deg)`;const b=Math.floor(state.rotation/40);if(b!==lastBucket){lastBucket=b;pointerTick()}if(p<1)requestAnimationFrame(frame);else finishSpin()}catch(err){finishSpin()}}
+ requestAnimationFrame(frame)
+}
 function renderWaiting(title,desc){els.taskHeader.style.display='none';els.taskBody.innerHTML='';const h=document.createElement('h2');safeText(h,title);const p=document.createElement('p');p.className='instruction';safeText(p,desc);els.taskBody.append(h,p)}
-function setHeader(type,alt){if(CONFIG.headers[type]){els.taskHeader.src=CONFIG.headers[type];els.taskHeader.alt=alt;els.taskHeader.style.display='block'}else els.taskHeader.style.display='none'}
+function setHeader(type,alt){els.taskBody.classList.remove('karistir-body');if(CONFIG.headers[type]){els.taskHeader.src=CONFIG.headers[type];els.taskHeader.alt=alt;els.taskHeader.style.display='block'}else els.taskHeader.style.display='none'}
 function makeFeedback(){const d=document.createElement('div');d.className='feedback';d.id='feedback';d.setAttribute('aria-live','polite');return d}
 function makeActions(){const wrap=document.createElement('div');wrap.className='task-actions';return wrap}
 function makeBtn(text,cls='action check'){const b=document.createElement('button');b.type='button';b.className=cls;safeText(b,text);return b}
 function markSelection(btn,container){container.querySelectorAll('.selected').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')}
-function handleAnswer(correct,points,explanation=''){const fb=$('feedback');if(correct){playFeedback('correct');state.score+=points;state.correctCount++;fb.className='feedback ok';safeText(fb,`Tebrikler! Doğru cevap. +${points} puan.`+(explanation?' '+explanation:''));announce(fb.textContent);disableCurrentInputs();showContinue()}else{playFeedback('wrong');state.wrongAttempts++;state.rights=Math.max(0,state.rights-1);updateHud();if(state.rights>0){fb.className='feedback bad';safeText(fb,`Henüz değil. ${state.rights} hakkın kaldı. İpucuna dikkat ederek tekrar düşün.`);announce(fb.textContent)}else{fb.className='feedback bad';safeText(fb,'Hakların bitti. '+explanation);announce(fb.textContent);disableCurrentInputs();showContinue()}}updateHud()}
+function handleAnswer(correct,points,explanation=''){
+  state.lastInteractionAt=Date.now();
+  const fb=$('feedback');
+  if(!fb||!fb.isConnected)return;
+  if(state.answerResolved)return;
+  const check=$('checkBtn');
+  if(check)check.disabled=true;
+  try{
+    if(correct){
+      state.answerResolved=true;
+      playFeedback('correct');state.score+=points;state.correctCount++;
+      fb.className='feedback ok';safeText(fb,`Tebrikler! Doğru cevap. +${points} puan.`+(explanation?' '+explanation:''));announce(fb.textContent);
+      disableCurrentInputs();showContinue();
+    }else{
+      playFeedback('wrong');state.wrongAttempts++;state.rights=Math.max(0,state.rights-1);updateHud();
+      if(state.rights>0){
+        fb.className='feedback bad';safeText(fb,`Henüz değil. ${state.rights} hakkın kaldı. İpucuna dikkat ederek tekrar düşün.`);announce(fb.textContent);
+        if(check)check.disabled=!state.selected;
+      }else{
+        state.answerResolved=true;
+        fb.className='feedback bad';safeText(fb,'Hakların bitti. '+explanation);announce(fb.textContent);disableCurrentInputs();showContinue();
+      }
+    }
+  }catch(err){
+    state.answerResolved=false;
+    if(check)check.disabled=false;
+    recoverInteractiveState('Cevap işlenirken bir sorun oluştu. Tekrar deneyebilirsin.');
+  }
+  updateHud();
+}
 function disableCurrentInputs(){els.taskBody.querySelectorAll('button.option,button.arabic-option,button.letter').forEach(b=>b.disabled=true);const c=$('checkBtn');if(c)c.disabled=true}
-function showContinue(){let n=$('continueBtn');if(n)return;n=makeBtn('Devam Et','action next');n.id='continueBtn';n.addEventListener('click',completeRound);const actions=$('taskActions')||els.taskBody;actions.appendChild(n)}
-function completeRound(){clearTimer();cleanupRecording();state.progress++;updateHud();if(state.progress>=CONFIG.rounds){finishGame();return}state.current=null;renderWaiting('Yeni tur hazır','Yeni görev için çarkı çevir.');announce(`Görev tamamlandı. İlerleme ${state.progress}/${CONFIG.rounds}.`)}
-function renderTask(type){resetTaskState();switch(type){case'bonus':return renderBonus();case'oku':return renderOku();case'bul':return renderBul();case'tanim':return renderTanim();case'tamamla':return renderTamamla();case'sec':return renderSec();case'tekrar':return renderTekrar();case'hizli':return renderHizli();case'karistir':return renderKaristir()}}
+function showContinue(){
+  let n=$('continueBtn');
+  if(n&&n.isConnected){n.disabled=false;n.style.pointerEvents='auto';n.style.visibility='visible';n.style.display='inline-flex';return}
+  n=makeBtn('Devam Et','action next');n.id='continueBtn';n.disabled=false;n.style.pointerEvents='auto';
+  const token=state.taskToken;
+  n.addEventListener('click',()=>{if(n.dataset.used==='1'||token!==state.taskToken)return;n.dataset.used='1';n.disabled=true;safeCompleteRound()});
+  let actions=$('taskActions');
+  if(!actions||!actions.isConnected){actions=makeActions();actions.id='taskActions';els.taskBody.appendChild(actions)}
+  actions.appendChild(n);
+}
+function completeRound(){
+  if(state.roundCompleting)return;
+  state.roundCompleting=true;
+  clearTimer();cleanupSelectionListener();clearMicTimeout();cleanupRecording();clearSpinWatchdog();
+  state.spinning=false;state.spinToken++;
+  state.progress++;updateHud();
+  if(state.progress>=CONFIG.rounds){state.roundCompleting=false;finishGame();return}
+  state.taskToken++;state.current=null;state.selected=null;state.answerResolved=false;state.roundCompleting=false;state.lastInteractionAt=Date.now();
+  renderWaiting('Yeni tur hazır','Yeni görev için çarkı çevir.');updateSpinButton();announce(`Görev tamamlandı. İlerleme ${state.progress}/${CONFIG.rounds}.`);
+}
+function safeCompleteRound(){try{completeRound()}catch(e){state.roundCompleting=false;recoverInteractiveState('Tur geçişinde oluşan hata giderildi. Çarkı yeniden çevirebilirsin.',true)}}
+function renderTask(type){
+  resetTaskState();
+  state.current=type;
+  try{
+    switch(type){case'bonus':return renderBonus();case'oku':return renderOku();case'bul':return renderBul();case'tanim':return renderTanim();case'tamamla':return renderTamamla();case'sec':return renderSec();case'tekrar':return renderTekrar();case'hizli':return renderHizli();case'karistir':return renderKaristir();default:throw new Error('Bilinmeyen görev: '+type)}
+  }catch(err){
+    recoverInteractiveState('Görev yüklenemedi. Çarkı yeniden çevirebilirsin.',true);
+  }
+}
+function recoverInteractiveState(message='İşlem güvenli biçimde sıfırlandı. Devam edebilirsin.',resetTask=false){
+  try{clearTimer()}catch(e){}
+  try{cleanupSelectionListener()}catch(e){}
+  try{clearMicTimeout()}catch(e){}
+  try{cleanupRecording()}catch(e){}
+  // Donen carki yarida kesmek carki iki dilim arasinda durduruyordu; yalnizca gorev sifirlanirken durdurulur.
+  if(resetTask||!state.spinning){if(state.spinning){els.wheel.style.transform=`rotate(${state.rotation}deg)`}state.spinning=false;clearSpinWatchdog();state.spinToken++}
+  state.roundCompleting=false;
+  if(resetTask){state.current=null;state.selected=null;state.answerResolved=false;renderWaiting('Çarkı Çevir',message)}
+  else{
+    const cont=$('continueBtn');if(cont)cont.disabled=false;
+    const check=$('checkBtn');if(check&&!state.answerResolved&&state.selected)check.disabled=false;
+    const fb=$('feedback');if(fb&&fb.isConnected&&!fb.textContent.trim())safeText(fb,message);
+  }
+  updateSpinButton();
+  announce(message);
+}
 function addCommonTitle(text,instruction){const h=document.createElement('h2');safeText(h,text);const p=document.createElement('p');p.className='instruction';safeText(p,instruction);els.taskBody.append(h,p)}
-function renderOku(){setHeader('oku','Örneği Oku');els.taskBody.innerHTML='';addCommonTitle('Örneği Oku','Verilen örneği iklab kuralına uygun şekilde sesli oku. Sonra kendi sesini dinle.');const samples=[['assets/images/ar_1_anbata.png','أَنْبَتَ'],['assets/images/ar_2_min_bayni.png','مِنْ بَيْنِ'],['assets/images/ar_3_kiramin_barara.png','كِرَامٍ بَرَرَةٍ']];const s=samples[Math.floor(Math.random()*samples.length)];const img=document.createElement('img');img.src=s[0];img.alt='Arapça okuma örneği: '+s[1];img.style.cssText='width:min(760px,92%);height:245px;object-fit:contain;border-radius:18px';els.taskBody.append(img);
- const controls=document.createElement('div');controls.className='recording-controls';const record=makeBtn('🎙 Sesimi Kaydet','action check mic-btn');record.id='recordBtn';const listen=makeBtn('▶ Sesimi Dinle','action next mic-btn');listen.id='listenBtn';listen.disabled=true;const done=makeBtn('Okumayı Tamamladım','action next');done.id='doneReadBtn';done.disabled=true;controls.append(record,listen,done);els.taskBody.append(controls,makeFeedback());record.addEventListener('click',toggleRecording);listen.addEventListener('click',playRecording);done.addEventListener('click',()=>{state.score+=CONFIG.points.normal;state.correctCount++;updateHud();const fb=$('feedback');fb.className='feedback ok';safeText(fb,`Okuma çalışman tamamlandı. +${CONFIG.points.normal} puan.`);playFeedback('correct');record.disabled=true;listen.disabled=true;done.disabled=true;showContinue()});}
-async function toggleRecording(){const b=$('recordBtn'),fb=$('feedback');if(state.mediaRecorder&&state.mediaRecorder.state==='recording'){state.mediaRecorder.stop();safeText(b,'🎙 Sesimi Kaydet');return}if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){fb.className='feedback bad';safeText(fb,'Mikrofon kaydı bu ortamda kullanılamıyor. Okumayı öğretmeninle birlikte yapabilirsin.');$('doneReadBtn').disabled=false;return}try{state.stream=await navigator.mediaDevices.getUserMedia({audio:true});const chunks=[];state.mediaRecorder=new MediaRecorder(state.stream);state.mediaRecorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};state.mediaRecorder.onstop=()=>{state.recordedBlob=new Blob(chunks,{type:state.mediaRecorder.mimeType||'audio/webm'});if(state.recordedUrl)URL.revokeObjectURL(state.recordedUrl);state.recordedUrl=URL.createObjectURL(state.recordedBlob);$('listenBtn').disabled=false;$('doneReadBtn').disabled=false;fb.className='feedback ok';safeText(fb,'Kayıt tamamlandı. Şimdi kendi sesini dinleyebilirsin.');announce('Kayıt durduruldu. Sesimi Dinle butonu aktif.');state.stream.getTracks().forEach(t=>t.stop())};state.mediaRecorder.start();b.innerHTML='<span class="recording-dot"></span>Kaydı Durdur';fb.className='feedback';safeText(fb,'Kayıt yapılıyor…');announce('Kayıt başladı')}catch(e){fb.className='feedback bad';safeText(fb,'Mikrofon izni alınamadı. Okumayı öğretmeninle birlikte yapabilirsin.');$('doneReadBtn').disabled=false}}
-function playRecording(){if(!state.recordedUrl)return;const a=new Audio(state.recordedUrl);a.play().catch(()=>{});announce('Kaydın oynatılıyor.')}
-function cleanupRecording(){try{if(state.mediaRecorder&&state.mediaRecorder.state==='recording')state.mediaRecorder.stop()}catch(e){};try{if(state.stream)state.stream.getTracks().forEach(t=>t.stop())}catch(e){};if(state.recordedUrl){URL.revokeObjectURL(state.recordedUrl);state.recordedUrl=null}state.recordedBlob=null;state.mediaRecorder=null;state.stream=null}
+function renderOku(){setHeader('oku','Örneği Oku');els.taskBody.innerHTML='';addCommonTitle('Örneği Oku','Verilen örneği iklab kuralına uygun şekilde sesli oku. Sonra kendi sesini dinle.');const samples=[['assets/images/ar_1_anbata.png','أَنْبَتَ'],['assets/images/ar_2_min_bayni.png','مِنْ بَيْنِ'],['assets/images/ar_3_kiramin_barara.png','كِرَامٍ بَرَرَةٍ']];const s=samples[Math.floor(Math.random()*samples.length)];const img=document.createElement('img');img.src=s[0];img.alt='Arapça okuma örneği: '+s[1];img.style.cssText='width:min(760px,92%);height:155px;object-fit:contain;border-radius:18px;flex:0 0 auto';els.taskBody.append(img);
+ const controls=document.createElement('div');controls.className='recording-controls';const record=makeBtn('🎙 Sesimi Kaydet','action check mic-btn');record.id='recordBtn';const listen=makeBtn('▶ Sesimi Dinle','action next mic-btn');listen.id='listenBtn';listen.disabled=true;const done=makeBtn('Okumayı Tamamladım','action next');done.id='doneReadBtn';done.disabled=true;controls.append(record,listen,done);els.taskBody.append(controls,makeFeedback());record.addEventListener('click',toggleRecording);listen.addEventListener('click',playRecording);done.addEventListener('click',()=>{if(state.answerResolved)return;state.answerResolved=true;cleanupRecording();state.score+=CONFIG.points.normal;state.correctCount++;updateHud();const fb=$('feedback');fb.className='feedback ok';safeText(fb,`Okuma çalışman tamamlandı. +${CONFIG.points.normal} puan.`);playFeedback('correct');record.disabled=true;listen.disabled=true;done.disabled=true;showContinue()});}
+function clearMicTimeout(){if(state.micTimeout){clearTimeout(state.micTimeout);state.micTimeout=null}}
+async function toggleRecording(){const b=$('recordBtn'),fb=$('feedback');if(!b||!fb)return;if(state.micPending)return;if(state.mediaRecorder&&state.mediaRecorder.state==='recording'){state.mediaRecorder.stop();safeText(b,'🎙 Sesimi Kaydet');return}if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){fb.className='feedback bad';safeText(fb,'Mikrofon kaydı bu ortamda kullanılamıyor. Okumayı öğretmeninle birlikte yapabilirsin.');$('doneReadBtn').disabled=false;return}const myTask=state.taskToken;state.micPending=true;b.disabled=true;try{clearMicTimeout();const micRequest=navigator.mediaDevices.getUserMedia({audio:true});micRequest.then(st=>{if(myTask!==state.taskToken){try{st.getTracks().forEach(t=>t.stop())}catch(e){}}}).catch(()=>{});const timeoutPromise=new Promise((_,reject)=>{state.micTimeout=setTimeout(()=>reject(new Error('Mikrofon zaman aşımı')),12000)});const gotStream=await Promise.race([micRequest,timeoutPromise]);clearMicTimeout();state.micPending=false;b.disabled=false;if(myTask!==state.taskToken||!b.isConnected){try{gotStream.getTracks().forEach(t=>t.stop())}catch(e){}return}state.stream=gotStream;const chunks=[];state.mediaRecorder=new MediaRecorder(state.stream);state.mediaRecorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};state.mediaRecorder.onstop=()=>{state.recordedBlob=new Blob(chunks,{type:state.mediaRecorder.mimeType||'audio/webm'});if(state.recordedUrl)URL.revokeObjectURL(state.recordedUrl);state.recordedUrl=URL.createObjectURL(state.recordedBlob);const listenBtn=$('listenBtn'),doneBtn=$('doneReadBtn');if(listenBtn)listenBtn.disabled=false;if(doneBtn)doneBtn.disabled=false;if(fb&&fb.isConnected){fb.className='feedback ok';safeText(fb,'Kayıt tamamlandı. Şimdi kendi sesini dinleyebilirsin.')}announce('Kayıt durduruldu. Sesimi Dinle butonu aktif.');try{if(state.stream)state.stream.getTracks().forEach(t=>t.stop())}catch(e){}};state.mediaRecorder.start();b.innerHTML='<span class="recording-dot"></span>Kaydı Durdur';fb.className='feedback';safeText(fb,'Kayıt yapılıyor…');announce('Kayıt başladı')}catch(e){clearMicTimeout();state.micPending=false;b.disabled=false;if(myTask!==state.taskToken||!fb.isConnected)return;fb.className='feedback bad';safeText(fb,'Mikrofon kullanılamadı. Okumayı öğretmeninle birlikte yapabilirsin.');const d=$('doneReadBtn');if(d)d.disabled=false}}
+function stopPlayer(){if(state.player){try{state.player.pause()}catch(e){}state.player=null}}
+function playRecording(){if(!state.recordedUrl)return;stopPlayer();const a=new Audio(state.recordedUrl);state.player=a;a.play().catch(()=>{});announce('Kaydın oynatılıyor.')}
+function cleanupRecording(){clearMicTimeout();stopPlayer();state.micPending=false;const rec=state.mediaRecorder;try{if(rec){rec.ondataavailable=null;rec.onstop=null;rec.onerror=null;if(rec.state==='recording')rec.stop()}}catch(e){};try{if(state.stream)state.stream.getTracks().forEach(t=>t.stop())}catch(e){};if(state.recordedUrl){try{URL.revokeObjectURL(state.recordedUrl)}catch(e){}state.recordedUrl=null}state.recordedBlob=null;state.mediaRecorder=null;state.stream=null}
 function renderBul(){
   setHeader('bul','İklabı Bul');
   els.taskBody.innerHTML='';
   addCommonTitle('İklabı Bul','Aşağıdaki ifadede iklabın uygulandığı kısmı sürükleyerek işaretle.');
   const hint=document.createElement('div');hint.className='drag-hint';safeText(hint,'Tenvin ile be harfinin bulunduğu kısmı fareyle ya da akıllı tahtada parmağınla sürükleyerek seç.');
-  const box=document.createElement('div');box.className='arabic-drag';box.lang='ar';box.dir='rtl';box.tabIndex=0;box.setAttribute('aria-label','خَبِيرٌ بِمَا ifadesinde iklab uygulanan kısmı sürükleyerek seçiniz');safeText(box,'خَبِيرٌ بِمَا');
+  const TEXT='خَبِيرٌ بِمَا';
+  const box=document.createElement('div');box.className='arabic-drag';box.lang='ar';box.dir='rtl';box.tabIndex=0;box.setAttribute('aria-label','خَبِيرٌ بِمَا ifadesinde iklab uygulanan kısmı sürükleyerek seçiniz');
+  const txt=document.createElement('span');txt.className='drag-text';txt.textContent=TEXT;box.append(txt);
   els.taskBody.append(hint,box);
   const fb=makeFeedback(),actions=makeActions();actions.id='taskActions';const check=makeBtn('Kontrol Et');check.id='checkBtn';check.disabled=true;actions.append(check);els.taskBody.append(fb,actions);
-  let selectedText='';
-  function selectionInside(){
-    const sel=window.getSelection();if(!sel||sel.rangeCount===0||sel.isCollapsed){selectedText='';check.disabled=true;return}
-    const range=sel.getRangeAt(0);const node=range.commonAncestorContainer;const inside=node===box||box.contains(node)||box.contains(range.startContainer)||box.contains(range.endContainer);
-    if(!inside){selectedText='';check.disabled=true;return}
-    selectedText=sel.toString().replace(/\s+/g,' ');check.disabled=!selectedText.trim();
-  }
-  document.addEventListener('selectionchange',selectionInside,{passive:true});
-  box.addEventListener('pointerup',()=>setTimeout(selectionInside,0));box.addEventListener('keyup',selectionInside);
+  // Metin tek parca kalir (Arapca harf birlesmeleri bozulmaz); secim, harf kumelerinin ekrandaki konumundan hesaplanir.
+  // Tarayicinin kendi metin secimi dokunmatik tahtalarda surukleyerek calismadigi icin Kontrol Et hic aktif olmuyordu.
+  const node=txt.firstChild;const clusters=[];
+  for(let i=0;i<TEXT.length;){let j=i+1;while(j<TEXT.length&&/[ً-ٰٟ]/.test(TEXT[j]))j++;clusters.push([i,j]);i=j}
+  const TANWIN=clusters.findIndex(c=>TEXT.slice(c[0],c[1]).includes('ٌ'));
+  const BA2=clusters.findIndex((c,k)=>k>TANWIN&&TEXT[c[0]]==='ب');
+  let a=-1,b=-1,dragging=false,pid=null,hlEls=[];
+  const rectsOf=(i,j)=>{const r=document.createRange();r.setStart(node,i);r.setEnd(node,j);return [...r.getClientRects()]};
+  function clusterAt(x,y){let best=-1,bd=Infinity;clusters.forEach((c,k)=>{if(/\s/.test(TEXT[c[0]])&&false)return;for(const r of rectsOf(c[0],c[1])){if(!r.width)continue;const dx=x<r.left?r.left-x:x>r.right?x-r.right:0;const dy=y<r.top?r.top-y:y>r.bottom?y-r.bottom:0;const d=dx*dx+dy*dy*0.25;if(d<bd){bd=d;best=k}}});return best}
+  function paint(){hlEls.forEach(e=>e.remove());hlEls=[];if(a<0||b<0)return;const lo=Math.min(a,b),hi=Math.max(a,b);const br=box.getBoundingClientRect();const sc=br.width/(box.offsetWidth||br.width)||1;
+    for(const r of rectsOf(clusters[lo][0],clusters[hi][1])){if(!r.width)continue;const d=document.createElement('div');d.className='drag-hl';d.style.left=((r.left-br.left)/sc-box.clientLeft-4)+'px';d.style.top=((r.top-br.top)/sc-box.clientTop+6)+'px';d.style.width=(r.width/sc+8)+'px';d.style.height=(r.height/sc-12)+'px';box.append(d);hlEls.push(d)}}
+  function update(){box.classList.remove('ok','bad');paint();check.disabled=state.answerResolved||a<0||b<0;state.selected=(a>=0&&b>=0)?[Math.min(a,b),Math.max(a,b)]:null;state.lastInteractionAt=Date.now()}
+  box.addEventListener('pointerdown',e=>{if(state.answerResolved)return;e.preventDefault();const k=clusterAt(e.clientX,e.clientY);if(k<0)return;dragging=true;pid=e.pointerId;try{box.setPointerCapture(pid)}catch(_){}a=b=k;update()});
+  box.addEventListener('pointermove',e=>{if(!dragging||e.pointerId!==pid)return;e.preventDefault();const k=clusterAt(e.clientX,e.clientY);if(k>=0&&k!==b){b=k;update()}});
+  const endDrag=e=>{if(!dragging||(e&&e.pointerId!==pid))return;dragging=false;try{box.releasePointerCapture(pid)}catch(_){}pid=null};
+  box.addEventListener('pointerup',endDrag);box.addEventListener('pointercancel',endDrag);box.addEventListener('lostpointercapture',()=>{dragging=false;pid=null});
+  // Klavye: ok tuslari ile secim (erisilebilirlik)
+  box.addEventListener('keydown',e=>{if(state.answerResolved)return;if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;e.preventDefault();if(a<0){a=b=0}else{const step=e.key==='ArrowLeft'?1:-1;b=Math.max(0,Math.min(clusters.length-1,b+step));if(!e.shiftKey)a=b}update()});
+  state.selectionCleanup=()=>{dragging=false;hlEls=[]};
+  window.addEventListener('resize',paint,{passive:true});const prevCleanup=state.selectionCleanup;state.selectionCleanup=()=>{window.removeEventListener('resize',paint);prevCleanup()};
   check.addEventListener('click',()=>{
-    selectionInside();
-    const t=(selectedText||'').normalize('NFC');
-    // Doğru bölge tenvin (ٌ) ile hemen ardından gelen be (ب) harfini kapsamalıdır.
-    const correct=t.includes('ٌ')&&t.includes('ب')&&t.length<=8;
-    handleAnswer(correct,CONFIG.points.normal,'İklab, tenvinden sonra ب harfi geldiğinde uygulanır.');
+    if(a<0||b<0||state.answerResolved)return;
+    const lo=Math.min(a,b),hi=Math.max(a,b);
+    // Dogru bolge: tenvin (ٌ) ile hemen ardindan gelen be (ب); kelimenin ilk be'si veya mim secime girmemeli.
+    const correct=lo<=TANWIN&&hi>=BA2&&hi<BA2+1&&lo>=TANWIN-1;
+    box.classList.add(correct?'ok':'bad');
+    handleAnswer(correct,CONFIG.points.normal,'İklab, tenvinden sonra ب harfi geldiğinde uygulanır: ٌ بِ');
   });
 }
 
+function renderTanim(){
+  setHeader('tanim','Doğru Tanımı Seç');
+  els.taskBody.innerHTML='';
+  addCommonTitle('Doğru Tanımı Seç','İklabın doğru tanımını seç.');
+  const opts=shuffle([
+    {id:'a',t:'Sakin nun veya tenvinden sonra ب harfi geldiğinde nun sesinin mim sesine dönüştürülerek gunne ile okunması.',ok:true},
+    {id:'b',t:'Sakin nun veya tenvinden sonra boğaz harflerinden biri geldiğinde nun sesinin açık ve belirgin okunması.',ok:false},
+    {id:'c',t:'Sakin nun veya tenvinden sonra ihfa harflerinden biri geldiğinde nun sesinin gizlenerek okunması.',ok:false}
+  ]);
+  renderChoiceOptions(opts,o=>o.ok,CONFIG.points.normal,'İklab; sakin nun veya tenvinden sonra ب harfi geldiğinde nun sesinin mim sesine dönüştürülerek gunne ile okunmasıdır.');
+}
 function renderChoiceOptions(opts,isCorrect,points,explanation){const box=document.createElement('div');box.className='options';for(const o of opts){const b=document.createElement('button');b.type='button';b.className='option';b.dataset.id=o.id;safeText(b,o.t);b.addEventListener('click',()=>{state.selected=o;markSelection(b,box);$('checkBtn').disabled=false});box.append(b)}const fb=makeFeedback(),actions=makeActions();actions.id='taskActions';const check=makeBtn('Kontrol Et');check.id='checkBtn';check.disabled=true;check.addEventListener('click',()=>{if(!state.selected)return;handleAnswer(!!isCorrect(state.selected),points,explanation)});actions.append(check);els.taskBody.append(box,fb,actions)}
 function renderTamamla(){setHeader('tamamla','Eksik Kelimeyi Tamamla');els.taskBody.innerHTML='';addCommonTitle('Eksik Harfi Tamamla','Sakin nun veya tenvinden sonra ( … ) harfi gelirse iklab olur.');const chars=shuffle(['ب','م','ن','ل']);const wrap=document.createElement('div');wrap.className='letter-options';for(const ch of chars){const b=document.createElement('button');b.type='button';b.className='letter';b.lang='ar';b.dir='rtl';safeText(b,ch);b.addEventListener('click',()=>{state.selected=ch;markSelection(b,wrap);$('checkBtn').disabled=false});wrap.append(b)}const fb=makeFeedback(),actions=makeActions();actions.id='taskActions';const check=makeBtn('Kontrol Et');check.id='checkBtn';check.disabled=true;check.addEventListener('click',()=>handleAnswer(state.selected==='ب',CONFIG.points.normal,'İklabın tek harfi be (ب) harfidir.'));actions.append(check);els.taskBody.append(wrap,fb,actions)}
 function renderSec(){setHeader('sec','İklablı Örneği Seç');els.taskBody.innerHTML='';addCommonTitle('İklablı Örneği Seç','Hangisinde iklab kuralı uygulanır?');const opts=shuffle([{id:'a',img:'assets/images/ar_4_an_burika.png',alt:'أَنْ بُورِكَ',ok:true},{id:'b',img:'assets/images/ar_5_min_sharri.png',alt:'مِنْ شَرِّ'},{id:'c',img:'assets/images/ar_6_minhum.png',alt:'مِنْهُمْ'}]);renderArabicImageOptions(opts,CONFIG.points.normal,'أَنْ بُورِكَ örneğinde sakin nundan sonra ب harfi geldiği için iklab uygulanır.')}
 function renderArabicImageOptions(opts,points,explanation){const box=document.createElement('div');box.className='arabic-options';for(const o of opts){const b=document.createElement('button');b.type='button';b.className='arabic-option';b.dataset.ok=o.ok?'1':'0';b.setAttribute('aria-label','Arapça seçenek '+o.alt);const img=document.createElement('img');img.src=o.img;img.alt=o.alt;b.append(img);b.addEventListener('click',()=>{state.selected=o;markSelection(b,box);$('checkBtn').disabled=false});box.append(b)}const fb=makeFeedback(),actions=makeActions();actions.id='taskActions';const check=makeBtn('Kontrol Et');check.id='checkBtn';check.disabled=true;check.addEventListener('click',()=>handleAnswer(!!state.selected?.ok,points,explanation));actions.append(check);els.taskBody.append(box,fb,actions)}
 function renderTekrar(){setHeader('tekrar','Yeniden Çevir');els.taskBody.innerHTML='';const img=document.createElement('img');img.src='assets/images/retry_panel.png';img.alt='Şansını bir kez daha dene';img.className='retry-panel-img';const b=document.createElement('button');b.type='button';b.className='img-button';const bi=document.createElement('img');bi.src='assets/images/button_spin_again.png';bi.alt='Çarkı yeniden çevir';bi.style.cssText='width:min(700px,94%);max-height:125px;object-fit:contain';b.append(bi);b.addEventListener('click',spinWheel);els.taskBody.append(img,b);announce('Yeniden çevir dilimi geldi. Bu tur ilerlemeye sayılmadı.')}
-function renderHizli(){setHeader('hizli','Hızlı Cevap');els.taskBody.innerHTML='';const variants=[{q:'İklabın tek harfi hangisidir?',opts:['ب','م','ن','ل'],ans:'ب',ex:'İklabın tek harfi be (ب) harfidir.'},{q:'İklabda nun sesi hangi harfe dönüşür?',opts:['م','ن','ب','ل'],ans:'م',ex:'İklabda nun sesi mim (م) sesine dönüşür.'}];const v=variants[Math.floor(Math.random()*variants.length)];addCommonTitle('Hızlı Cevap',v.q);const timer=document.createElement('div');timer.className='timer-wrap';timer.innerHTML='<img src="assets/images/timer_ring.png" alt=""><div id="timerNumber" class="timer-number">10</div>';els.taskBody.append(timer);const wrap=document.createElement('div');wrap.className='letter-options';for(const ch of shuffle(v.opts)){const b=document.createElement('button');b.type='button';b.className='letter';b.lang='ar';b.dir='rtl';safeText(b,ch);b.addEventListener('click',()=>{state.selected=ch;markSelection(b,wrap);$('checkBtn').disabled=false});wrap.append(b)}const fb=makeFeedback(),actions=makeActions();actions.id='taskActions';const check=makeBtn('Kontrol Et');check.id='checkBtn';check.disabled=true;check.addEventListener('click',()=>{clearTimer();handleAnswer(state.selected===v.ans,CONFIG.points.normal,v.ex)});actions.append(check);els.taskBody.append(wrap,fb,actions);startTimer(()=>{const f=$('feedback');f.className='feedback bad';safeText(f,'Süre doldu. '+v.ex);disableCurrentInputs();showContinue();announce(f.textContent)})}
-function startTimer(onEnd){clearTimer();state.timeLeft=10;state.timerId=setInterval(()=>{state.timeLeft--;const n=$('timerNumber');if(n)safeText(n,state.timeLeft);if(state.timeLeft<=0){clearTimer();onEnd()}},1000)}function clearTimer(){if(state.timerId){clearInterval(state.timerId);state.timerId=null}}
-function renderKaristir(){setHeader('bul','Karıştırma Sorusu');els.taskBody.innerHTML='';addCommonTitle('Karıştırma Sorusu','Aşağıdaki örneğin hangi tecvid kuralına ait olduğunu seç.');const exs=[{img:'assets/images/ar_7_layunbadhanna.png',alt:'لَيُنْبَذَنَّ',ans:'İklab'},{img:'assets/images/ar_8_shayin_kabir.png',alt:'شَيْءٍ كَبِيرٍ',ans:'İhfa'},{img:'assets/images/ar_9_alimun_hakim.png',alt:'عَلِيمٌ حَكِيمٌ',ans:'İzhar'}];const e=exs[Math.floor(Math.random()*exs.length)];const img=document.createElement('img');img.src=e.img;img.alt='Arapça örnek '+e.alt;img.style.cssText='width:min(760px,92%);height:230px;object-fit:contain;border-radius:18px';els.taskBody.append(img);const opts=shuffle(['İklab','İhfa','İzhar']).map(x=>({id:x,t:x,ok:x===e.ans}));renderChoiceOptions(opts,o=>o.ok,CONFIG.points.mix,`Bu örnek ${e.ans} kuralına aittir.`)}
-function renderBonus(){els.taskHeader.style.display='none';els.taskBody.innerHTML='';addCommonTitle('+20 Bonus Puan','Şanslı dilim! Doğrudan 20 puan kazandın.');const c=document.createElement('div');c.className='confetti';safeText(c,'✨ ⭐ ✨');const n=document.createElement('div');n.className='bonus';safeText(n,'+20');const fb=makeFeedback();fb.className='feedback ok';safeText(fb,'Tebrikler! 20 bonus puan kazandın.');els.taskBody.append(c,n,fb);state.score+=CONFIG.points.bonus;updateHud();playFeedback('correct');showContinue();announce('20 bonus puan kazandın.')}
-function finishGame(){clearTimer();cleanupRecording();safeText($('finalTotal'),state.score);safeText($('certName'),state.name);safeText($('certScore'),state.score);safeText($('certDate'),new Intl.DateTimeFormat('tr-TR').format(new Date()));showScreen(els.final);announce(`Oyun tamamlandı. Toplam puanın ${state.score}.`)}
-function newGame(keepName=false){clearTimer();cleanupRecording();state.score=0;state.progress=0;state.rights=3;state.rotation=0;state.spinning=false;state.deck=[];state.current=null;state.selected=null;state.wrongAttempts=0;state.correctCount=0;els.wheel.style.transform='rotate(0deg)';refillDeck();updateHud();renderWaiting('Çarkı Çevir','Çarkı çevirerek ilk görevini seç.');els.spin.disabled=false;if(keepName){showScreen(els.game);safeText($('studentTag'),state.name.split(/\s+/)[0]||'Öğrenci')}else{state.name='';$('studentName').value='';showScreen(els.start);$('studentName').focus()}}
+function renderHizli(){setHeader('hizli','Hızlı Cevap');els.taskBody.innerHTML='';const variants=[{q:'İklabın tek harfi hangisidir?',opts:['ب','م','ن','ل'],ans:'ب',ex:'İklabın tek harfi be (ب) harfidir.'},{q:'İklabda nun sesi hangi harfe dönüşür?',opts:['م','ن','ب','ل'],ans:'م',ex:'İklabda nun sesi mim (م) sesine dönüşür.'}];const v=variants[Math.floor(Math.random()*variants.length)];addCommonTitle('Hızlı Cevap',v.q);const timer=document.createElement('div');timer.className='timer-wrap';timer.innerHTML='<img src="assets/images/timer_ring.png" alt=""><div id="timerNumber" class="timer-number">10</div>';els.taskBody.append(timer);const wrap=document.createElement('div');wrap.className='letter-options';for(const ch of shuffle(v.opts)){const b=document.createElement('button');b.type='button';b.className='letter';b.lang='ar';b.dir='rtl';safeText(b,ch);b.addEventListener('click',()=>{state.selected=ch;markSelection(b,wrap);$('checkBtn').disabled=false});wrap.append(b)}const fb=makeFeedback(),actions=makeActions();actions.id='taskActions';const check=makeBtn('Kontrol Et');check.id='checkBtn';check.disabled=true;check.addEventListener('click',()=>{if(state.answerResolved||!state.selected)return;handleAnswer(state.selected===v.ans,CONFIG.points.normal,v.ex);if(state.answerResolved)clearTimer()});actions.append(check);els.taskBody.append(wrap,fb,actions);startTimer(()=>{const f=$('feedback');if(!f)return;f.className='feedback bad';safeText(f,'Süre doldu. '+v.ex);disableCurrentInputs();showContinue();announce(f.textContent)})}
+function startTimer(onEnd){clearTimer();state.timeLeft=10;state.timerId=setInterval(()=>{state.timeLeft--;const n=$('timerNumber');if(n)safeText(n,state.timeLeft);if(state.timeLeft<=0){clearTimer();if(state.answerResolved)return;state.answerResolved=true;try{onEnd()}catch(e){recoverInteractiveState('Süre sonu işlemi tamamlanamadı. Devam edebilirsin.')}}},1000)}function clearTimer(){if(state.timerId){clearInterval(state.timerId);state.timerId=null}}
+function renderKaristir(){setHeader('bul','Karıştırma Sorusu');els.taskBody.classList.add('karistir-body');els.taskBody.innerHTML='';addCommonTitle('Karıştırma Sorusu','Aşağıdaki örneğin hangi tecvid kuralına ait olduğunu seç.');const exs=[{img:'assets/images/ar_7_layunbadhanna.png',alt:'لَيُنْبَذَنَّ',ans:'İklab'},{img:'assets/images/ar_8_shayin_kabir.png',alt:'شَيْءٍ كَبِيرٍ',ans:'İhfa'},{img:'assets/images/ar_9_alimun_hakim.png',alt:'عَلِيمٌ حَكِيمٌ',ans:'İzhar'}];const e=exs[Math.floor(Math.random()*exs.length)];const img=document.createElement('img');img.src=e.img;img.alt='Arapça örnek '+e.alt;img.className='karistir-example';img.style.cssText='width:min(760px,92%);height:150px;object-fit:contain;border-radius:18px';els.taskBody.append(img);const opts=shuffle(['İklab','İhfa','İzhar']).map(x=>({id:x,t:x,ok:x===e.ans}));renderChoiceOptions(opts,o=>o.ok,CONFIG.points.mix,`Bu örnek ${e.ans} kuralına aittir.`)}
+function renderBonus(){els.taskHeader.style.display='none';els.taskBody.innerHTML='';addCommonTitle('+20 Bonus Puan','Şanslı dilim! Doğrudan 20 puan kazandın.');const c=document.createElement('div');c.className='confetti';safeText(c,'✨ ⭐ ✨');const n=document.createElement('div');n.className='bonus';safeText(n,'+20');const fb=makeFeedback();fb.className='feedback ok';safeText(fb,'Tebrikler! 20 bonus puan kazandın.');els.taskBody.append(c,n,fb);state.answerResolved=true;state.score+=CONFIG.points.bonus;updateHud();playFeedback('correct');showContinue();announce('20 bonus puan kazandın.')}
+function finishGame(){clearTimer();cleanupSelectionListener();cleanupRecording();state.spinning=false;clearSpinWatchdog();state.spinToken++;safeText($('finalTotal'),state.score);safeText($('certName'),state.name);safeText($('certScore'),state.score);safeText($('certDate'),new Intl.DateTimeFormat('tr-TR').format(new Date()));showScreen(els.final);announce(`Oyun tamamlandı. Toplam puanın ${state.score}.`)}
+function newGame(keepName=false){try{intro.video.pause();introStopWatch()}catch(e){}document.querySelectorAll('.modal-back').forEach(m=>m.remove());clearTimer();cleanupSelectionListener();cleanupRecording();clearSpinWatchdog();state.spinToken++;state.score=0;state.progress=0;state.rights=3;state.rotation=0;state.spinning=false;state.deck=[];state.current=null;state.selected=null;state.wrongAttempts=0;state.correctCount=0;state.roundCompleting=false;state.answerResolved=false;state.taskToken++;state.lastInteractionAt=Date.now();els.wheel.style.transform='rotate(0deg)';refillDeck();updateHud();renderWaiting('Çarkı Çevir','Çarkı çevirerek ilk görevini seç.');if(keepName){showScreen(els.game);updateSpinButton();safeText($('studentTag'),state.name.split(/\s+/)[0]||'Öğrenci')}else{state.name='';$('studentName').value='';showScreen(els.start);$('studentName').focus()}}
 $('startBtn').addEventListener('click',()=>{const name=$('studentName').value.trim().replace(/\s+/g,' ');if(name.length<2){safeText($('startMsg'),'Lütfen ad ve soyadını gir.');$('studentName').focus();return}state.name=name;safeText($('startMsg'),'');safeText($('studentTag'),name.split(' ')[0]);newGame(true);announce(`Hoş geldin ${name.split(' ')[0]}. Çarkı çevirebilirsin.`)});
 $('studentName').addEventListener('keydown',e=>{if(e.key==='Enter')$('startBtn').click()});els.spin.addEventListener('click',spinWheel);
 $('soundBtn').addEventListener('click',()=>{state.sound=!state.sound;$('soundBtn').setAttribute('aria-pressed',String(!state.sound));safeText($('soundBtn'),state.sound?'🔊':'🔇');$('soundBtn').setAttribute('aria-label',state.sound?'Sesi kapat':'Sesi aç');announce(state.sound?'Ses açıldı.':'Ses kapatıldı.')});
 $('fullBtn').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){announce('Tam ekran bu tarayıcıda kullanılamıyor.')}});
-function home(){if(confirm('Ana sayfaya dönmek istiyor musun? Mevcut oyun sıfırlanacak.'))newGame(false)}$('homeBtn').addEventListener('click',home);$('finalHomeBtn').addEventListener('click',()=>newGame(false));$('replayBtn').addEventListener('click',()=>newGame(false));$('printBtn').addEventListener('click',()=>window.print());
+function home(){if(document.querySelector('.modal-back'))return;const back=document.createElement('div');back.className='modal-back';back.setAttribute('role','dialog');back.setAttribute('aria-modal','true');const box=document.createElement('div');box.className='modal-box';const p=document.createElement('p');safeText(p,'Ana sayfaya dönmek istiyor musun? Mevcut oyun sıfırlanacak.');const acts=document.createElement('div');acts.className='task-actions';const yes=makeBtn('Evet, ana sayfa','action retry');const no=makeBtn('Hayır, devam et','action next');const close=()=>back.remove();yes.addEventListener('click',()=>{close();newGame(false)});no.addEventListener('click',close);back.addEventListener('keydown',e=>{if(e.key==='Escape')close()});acts.append(no,yes);box.append(p,acts);back.append(box);document.querySelector('.overlay').append(back);no.focus()}$('homeBtn').addEventListener('click',home);$('finalHomeBtn').addEventListener('click',()=>newGame(false));$('replayBtn').addEventListener('click',()=>newGame(false));$('printBtn').addEventListener('click',()=>window.print());
 $('txtBtn').addEventListener('click',()=>{const txt=[`Ad Soyad: ${state.name}`,'Ders: Kur’an-ı Kerim','Konu: İklab',`Skor: ${state.score}`,`Doğru/Tamamlanan Görev: ${state.correctCount}`,`Yanlış Deneme: ${state.wrongAttempts}`,`Tamamlama: %100`,`Tarih: ${new Intl.DateTimeFormat('tr-TR').format(new Date())}`].join('\n');const blob=new Blob(['\ufeff'+txt],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='iklab_sonuc.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
-window.addEventListener('beforeunload',cleanupRecording);updateHud();refillDeck();
+function ensureInteractiveState(){
+  if(!els.game.classList.contains('active'))return;
+  try{
+    const cont=$('continueBtn');
+    if(state.answerResolved){
+      if(!cont||!cont.isConnected)showContinue();
+      else{cont.disabled=false;cont.style.pointerEvents='auto';cont.style.visibility='visible';}
+    }
+    updateSpinButton();
+    if(state.spinning&&Date.now()-state.lastInteractionAt>12000){recoverInteractiveState('Çark işlemi takıldığı için güvenli biçimde sıfırlandı. Yeniden çevirebilirsin.',true);return}
+    if(state.roundCompleting&&Date.now()-state.lastInteractionAt>5000){state.roundCompleting=false;recoverInteractiveState('Tur geçişi takıldığı için oyun yeniden etkinleştirildi.',!state.current);return}
+    if(state.current&&!state.spinning&&!state.answerResolved&&Date.now()-state.lastInteractionAt>7000){
+      const enabledButtons=[...els.taskBody.querySelectorAll('button')].filter(b=>!b.disabled&&b.offsetParent!==null);
+      const dragArea=els.taskBody.querySelector('.arabic-drag');
+      const recording=state.mediaRecorder&&state.mediaRecorder.state==='recording';
+      if(enabledButtons.length===0&&!dragArea&&!recording){recoverInteractiveState('Görev etkileşimi takıldığı için güvenli biçimde yeniden yüklendi.',true);return}
+      const check=$('checkBtn');if(check&&state.selected&&!state.answerResolved)check.disabled=false;
+    }
+  }catch(e){try{recoverInteractiveState('Etkileşim güvenliği devreye girdi. Devam edebilirsin.',false)}catch(_){} }
+}
+['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{state.lastInteractionAt=Date.now()},{capture:true,passive:true}));
+state.interactionWatchdog=setInterval(ensureInteractiveState,1200);
+let recoveringFromError=false;
+window.addEventListener('error',()=>{if(!els.game.classList.contains('active')||recoveringFromError)return;recoveringFromError=true;try{recoverInteractiveState('Beklenmeyen bir hata güvenli biçimde giderildi. Devam edebilirsin.',false)}finally{setTimeout(()=>recoveringFromError=false,50)}});
+window.addEventListener('unhandledrejection',()=>{if(!els.game.classList.contains('active')||recoveringFromError)return;recoveringFromError=true;try{recoverInteractiveState('Beklenmeyen bir işlem hatası giderildi. Devam edebilirsin.',false)}finally{setTimeout(()=>recoveringFromError=false,50)}});
+window.addEventListener('beforeunload',()=>{clearSpinWatchdog();cleanupSelectionListener();clearMicTimeout();cleanupRecording();if(state.interactionWatchdog)clearInterval(state.interactionWatchdog)});updateHud();refillDeck();
+// ---- Intro: "OYUNU BAŞLAT" -> video sesli oynar -> bitince dogrudan ad-soyad ekrani ----
+const intro={screen:$('introScreen'),video:$('introVideo'),tap:$('introTapLayer'),skip:$('introSkipBtn'),done:false,playing:false,stallTimer:null,lastT:-1};
+function introShow(layer){intro.tap.classList.toggle('show',layer==='tap');intro.skip.classList.toggle('show',layer==='playing')}
+function introStopWatch(){if(intro.stallTimer){clearInterval(intro.stallTimer);intro.stallTimer=null}}
+function introFinish(){ // video bitti / gecildi / oynatilamadi: donmadan ad-soyad ekranina gec
+  if(intro.done)return;intro.done=true;intro.playing=false;introStopWatch();try{intro.video.pause()}catch(e){}
+  introShow('none');if(intro.screen.classList.contains('active')){showScreen(els.start);try{$('studentName').focus()}catch(e){}}}
+function introPlay(){
+  if(intro.playing)return;intro.playing=true;intro.done=false;introStopWatch();intro.lastT=-1;unlockAudio();
+  const v=intro.video;v.muted=false;v.volume=1;try{v.currentTime=0}catch(e){}
+  introShow('playing');
+  let pr;try{pr=v.play()}catch(e){pr=Promise.reject(e)}
+  Promise.resolve(pr).then(()=>{
+    // Takilma korumasi: video 5 sn ilerlemezse oyun beklemeden acilir
+    let still=0;intro.stallTimer=setInterval(()=>{if(intro.done)return introStopWatch();if(v.ended)return introFinish();if(v.currentTime===intro.lastT&&!v.paused){if(++still>=5)introFinish()}else still=0;intro.lastT=v.currentTime},1000);
+  }).catch(()=>introFinish());
+}
+intro.video.addEventListener('ended',introFinish);
+intro.video.addEventListener('error',introFinish);$('introLastSource').addEventListener('error',()=>{if(intro.playing)introFinish();else intro.broken=true});
+intro.tap.addEventListener('click',()=>{if(intro.broken){intro.done=false;return introFinish()}introPlay()});
+intro.tap.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();intro.tap.click()}});
+intro.skip.addEventListener('click',introFinish);
+$('introReplayBtn').addEventListener('click',()=>{showScreen(intro.screen);intro.done=false;intro.playing=false;introPlay()});
+introShow('tap');
+// Tum gorseller basta yuklenip cozulur; bolum gecislerinde buyuk PNG'lerin ilk kez cozulmesi takilmaya yol aciyordu.
+const PRELOAD=[...Object.values(CONFIG.headers),'assets/images/wheel.png','assets/images/wheel_pointer.png','assets/images/card.png','assets/images/button_spin.png','assets/images/button_spin_again.png','assets/images/retry_panel.png','assets/images/timer_ring.png','assets/images/final_certificate.png','assets/images/button_replay.png','assets/images/button_home.png','assets/images/button_print_certificate.png','assets/images/ar_1_anbata.png','assets/images/ar_2_min_bayni.png','assets/images/ar_3_kiramin_barara.png','assets/images/ar_4_an_burika.png','assets/images/ar_5_min_sharri.png','assets/images/ar_6_minhum.png','assets/images/ar_7_layunbadhanna.png','assets/images/ar_8_shayin_kabir.png','assets/images/ar_9_alimun_hakim.png'];
+window.__preloaded=PRELOAD.map(src=>{const im=new Image();im.decoding='async';im.src=src;if(im.decode)im.decode().catch(()=>{});return im});
 </script>
 </body>
 </html>
